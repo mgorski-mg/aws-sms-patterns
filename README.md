@@ -1,4 +1,4 @@
-# Amazon CloudFront Patterns
+# AWS SMS Patterns
 
 Sample app containing examples of sending SMSes using AWS services.
 
