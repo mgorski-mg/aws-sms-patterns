@@ -1,1 +1,1 @@
-sam deploy --stack-name sms-api --s3-bucket nth-deploy-sand --s3-prefix sms-api --capabilities CAPABILITY_IAM
+sam deploy --stack-name sms-api --s3-bucket [s3-bucket-name] --s3-prefix sms-api --capabilities CAPABILITY_IAM
