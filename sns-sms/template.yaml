@@ -25,6 +25,12 @@ Resources:
               Action: sns:Publish
               Resource: '*'
 
+  SendSmsLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${SendSmsLambda}
+      RetentionInDays: 180
+
   Api:
     Type: AWS::Serverless::Api
     Properties:
