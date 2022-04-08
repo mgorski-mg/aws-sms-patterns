@@ -8,18 +8,15 @@ Resources:
       Handler: src/send-sms.handler
       Runtime: nodejs14.x
       Tracing: Active
-      MemorySize: 1024
+      MemorySize: 128
       Timeout: 10
-      Events:
-        API:
-          Type: Api
-          Properties:
-            Path: /sendSms
-            Method: post
-            RestApiId: !Ref Api
+      #      FunctionUrlConfig:
+      #        AuthType: NONE
+      #        Cors:
+      #          AllowOrigins:
+      #            - "https://example.com"
       Policies:
         - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
         - AWSXrayWriteOnlyAccess
         - Statement:
             - Effect: Allow
@@ -32,14 +29,40 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${SendSmsLambda}
       RetentionInDays: 180
 
-  Api:
-    Type: AWS::Serverless::Api
+  SendSmsLambdaUrl:
+    Type: AWS::Lambda::Url
     Properties:
-      StageName: api
-      TracingEnabled: true
-      OpenApiVersion: 3.0.2
+      TargetFunctionArn: !Ref SendSmsLambda
+      AuthType: NONE
+      Cors:
+        AllowOrigins:
+          - '*'
+        AllowMethods:
+          - POST
+        AllowHeaders:
+          - Content-Type
+          - Content-Length
+          - Accept-Encoding
+          - Connection
+          - User-Agent
+        ExposeHeaders:
+          - Content-Type
+          - Content-Length
+          - Content-Encoding
+          - Connection
+          - Date
+        MaxAge: 300
+        AllowCredentials: false
+
+  SendSmsLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref SendSmsLambda
+      Principal: '*'
+      Action: lambda:InvokeFunctionUrl
+      FunctionUrlAuthType: NONE
 
 Outputs:
   APIEndpoint:
-    Description: "API Gateway endpoint URL for api stage"
-    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com/api/"
+    Description: "Lambda URL"
+    Value: !GetAtt SendSmsLambdaUrl.FunctionUrl
